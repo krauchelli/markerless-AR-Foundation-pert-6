@@ -1,0 +1,2 @@
+A:\unity projects\markerless AR Foundation pert 6\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+A:\unity projects\markerless AR Foundation pert 6\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

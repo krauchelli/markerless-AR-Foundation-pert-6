@@ -1,0 +1,5 @@
+A:/unity projects/markerless AR Foundation pert 6/.utmp/RelWithDebInfo/4j3x6zzj/arm64-v8a/CMakeFiles/edit_cache.dir
+A:/unity projects/markerless AR Foundation pert 6/.utmp/RelWithDebInfo/4j3x6zzj/arm64-v8a/CMakeFiles/rebuild_cache.dir
+A:/unity projects/markerless AR Foundation pert 6/.utmp/RelWithDebInfo/4j3x6zzj/arm64-v8a/GameActivity/CMakeFiles/game.dir
+A:/unity projects/markerless AR Foundation pert 6/.utmp/RelWithDebInfo/4j3x6zzj/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+A:/unity projects/markerless AR Foundation pert 6/.utmp/RelWithDebInfo/4j3x6zzj/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir

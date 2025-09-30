@@ -1,0 +1,60 @@
+# =============== #
+# Unity Generated #
+# =============== #
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# =================================================================== #
+# SENSITIVE FILES - JANGAN PERNAH DI-COMMIT KE REPOSITORI PUBLIK #
+# =================================================================== #
+
+# Kunci untuk signing aplikasi Android. Sangat Rahasia!
+*.keystore
+keystore.properties
+gradle.properties
+
+# File umum untuk menyimpan kunci API dan rahasia lainnya
+secrets.json
+.env
+*.env
+
+# Menghindari komit file yang mengandung kata "API_KEY" atau "SECRET" secara tidak sengaja
+*API_KEY*
+*SECRET*
+
+# ================================ #
+# IDE & Editor Files (VS, Rider, VSCode) #
+# ================================ #
+.vs/
+.vscode/
+.idea/
+*.sln
+*.csproj
+*.suo
+*.user
+*.userprefs
+*.unityproj
+
+# ============= #
+# OS Generated #
+# ============= #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# ============ #
+# Other Files #
+# ============ #
+*.apk
+*.aab
+*.unitypackage
