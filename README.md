@@ -31,7 +31,7 @@ The app is built with a modern "Select-Preview-Position-Lock" workflow, giving u
     -   Input System Package
     -   TextMeshPro
 -   **3D Assets:**
-    -   [Furniture FREE](https://assetstore.unity.com/packages/3d/props/furniture-free-177192) by `ithappy`
+    -   [Furniture FREE](https://assetstore.unity.com/packages/3d/props/furniture/furniture-free-low-poly-3d-models-pack-260522) by `ithappy`
 
 ---
 
