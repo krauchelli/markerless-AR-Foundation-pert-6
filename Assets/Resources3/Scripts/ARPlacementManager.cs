@@ -3,29 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems; // Namespace untuk mendeteksi sentuhan pada UI
+using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 public class ARPlacementManager : MonoBehaviour
 {
     public static ARPlacementManager Instance;
-
-    // Enum untuk mendefinisikan mode aplikasi saat ini
-    private enum AppMode { Mapping, Placing }
     private AppMode currentMode;
+    private enum AppMode { Mapping, Placing }
 
     [Header("Pengaturan UI")]
-    public GameObject mappingUIPanel;         // Panel UI untuk mode mapping
-    public GameObject placementUIPanel;       // Panel UI untuk mode penempatan
-    public TextMeshProUGUI mappingStatusText; // Teks instruksi saat mapping
+    public GameObject mappingUIPanel;
+    public GameObject placementUIPanel;
+    public TextMeshProUGUI mappingStatusText;
     public Slider rotationSlider;
     public Slider scaleSlider;
 
     [Header("Pengaturan Mapping")]
-    public GameObject markerPrefab;           // Prefab untuk penanda sudut
-    public LineRenderer areaOutline;          // Komponen untuk menggambar garis batas
+    public GameObject markerPrefab;
+    public LineRenderer areaOutline;
     private List<GameObject> cornerMarkers = new List<GameObject>();
+
+    // --- VARIABEL BARU UNTUK TRACKER 3D ---
+    [Header("Pengaturan Tracker")]
+    public GameObject liveTrackerPrefab;
+    private GameObject liveTrackerInstance;
+    // ------------------------------------
 
     [Header("Pengaturan Umpan Balik Visual")]
     public Material previewValidMaterial;
@@ -33,7 +37,6 @@ public class ARPlacementManager : MonoBehaviour
     public TextMeshProUGUI notificationText;
     public TextMeshProUGUI debugPositionText;
 
-    // Variabel Internal
     private ARRaycastManager arRaycastManager;
     private List<ARRaycastHit> hits = new List<ARRaycastHit>();
     private GameObject previewObject;
@@ -52,7 +55,6 @@ public class ARPlacementManager : MonoBehaviour
     {
         arRaycastManager = GetComponent<ARRaycastManager>();
         
-        // Atur kondisi awal aplikasi ke mode Mapping
         currentMode = AppMode.Mapping;
         mappingUIPanel.SetActive(true);
         placementUIPanel.SetActive(false);
@@ -63,25 +65,64 @@ public class ARPlacementManager : MonoBehaviour
 
         if(notificationText != null) notificationText.text = "";
         if(debugPositionText != null) debugPositionText.text = "";
+
+        // --- BARIS BARU ---
+        // Buat instance tracker di awal dan sembunyikan
+        if (liveTrackerPrefab != null)
+        {
+            liveTrackerInstance = Instantiate(liveTrackerPrefab);
+            liveTrackerInstance.SetActive(false);
+        }
+        // ------------------
     }
 
     void Update()
     {
-        // Panggil fungsi update yang sesuai dengan mode aplikasi
-        if (currentMode == AppMode.Placing)
+        // Pindahkan logika raycast ke atas agar bisa digunakan oleh semua mode
+        Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        bool didRaycastHitPlane = arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon);
+
+        // --- LOGIKA BARU UNTUK TRACKER 3D ---
+        if (liveTrackerInstance != null)
         {
-            UpdatePlacingMode();
+            if (didRaycastHitPlane)
+            {
+                // Jika raycast kena, pindahkan tracker dan tampilkan
+                Pose hitPose = hits[0].pose;
+                liveTrackerInstance.transform.SetPositionAndRotation(hitPose.position, hitPose.rotation);
+                liveTrackerInstance.SetActive(true);
+            }
+            else
+            {
+                // Jika tidak kena, sembunyikan tracker
+                liveTrackerInstance.SetActive(false);
+            }
+        }
+        // ------------------------------------
+
+        // Panggil fungsi update yang sesuai dengan mode aplikasi
+        if (currentMode == AppMode.Mapping)
+        {
+            UpdateMappingMode(didRaycastHitPlane);
+        }
+        else if (currentMode == AppMode.Placing)
+        {
+            UpdatePlacingMode(didRaycastHitPlane);
         }
     }
 
-    // --- LOGIKA UTAMA UNTUK SETIAP MODE ---
+    // Modifikasi fungsi-fungsi update untuk menerima hasil raycast
+    private void UpdateMappingMode(bool didRaycastHitPlane)
+    {
+        // ... (Fungsi ini tidak perlu diubah, tapi kita bisa memanfaatkannya nanti) ...
+    }
 
-    private void UpdatePlacingMode()
+    private void UpdatePlacingMode(bool didRaycastHitPlane)
     {
         if (previewObject == null) return;
-
-        Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-        if (arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
+        
+        // Kita sudah punya hasil raycast dari Update(), jadi tinggal pakai
+        if(didRaycastHitPlane)
         {
             Pose hitPose = hits[0].pose;
             previewObject.transform.position = hitPose.position;
@@ -92,25 +133,21 @@ public class ARPlacementManager : MonoBehaviour
             CheckPlacementValidity();
         }
     }
-
-    // --- FUNGSI-FUNGSI YANG DIPANGGIL OLEH TOMBOL UI ---
-
+    
+    // Modifikasi OnMarkPositionPressed untuk menggunakan tracker
     public void OnMarkPositionPressed()
     {
-        // Cek agar tidak menandai jika jari sedang menyentuh tombol UI
         if (Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) return;
-        
         if (cornerMarkers.Count >= 4)
         {
             ShowNotification("Area sudah memiliki 4 titik. Tekan 'Selesai' atau 'Reset'.", 3f);
             return;
         }
 
-        Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-        if (arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
+        // Ambil posisi dari tracker yang sudah ada, bukan dari raycast baru
+        if (liveTrackerInstance != null && liveTrackerInstance.activeInHierarchy)
         {
-            Pose hitPose = hits[0].pose;
-            GameObject newMarker = Instantiate(markerPrefab, hitPose.position, Quaternion.identity);
+            GameObject newMarker = Instantiate(markerPrefab, liveTrackerInstance.transform.position, Quaternion.identity);
             cornerMarkers.Add(newMarker);
 
             UpdateAreaVisuals();
@@ -118,6 +155,8 @@ public class ARPlacementManager : MonoBehaviour
         }
     }
 
+    // ... (Sisa fungsi lainnya tetap sama) ...
+    #region Unchanged_Functions
     public void FinishMapping()
     {
         if (cornerMarkers.Count < 3)
@@ -130,13 +169,11 @@ public class ARPlacementManager : MonoBehaviour
         mappingUIPanel.SetActive(false);
         placementUIPanel.SetActive(true);
 
-        // Sembunyikan semua elemen mapping
         foreach (var marker in cornerMarkers) { marker.SetActive(false); }
         if (areaOutline != null) areaOutline.gameObject.SetActive(false);
 
         ShowNotification("Mode Penempatan Aktif!", 3f);
     }
-
     public void ResetMapping()
     {
         foreach (var marker in cornerMarkers) { Destroy(marker); }
@@ -146,7 +183,6 @@ public class ARPlacementManager : MonoBehaviour
         UpdateMappingStatusText();
         ShowNotification("Mapping direset. Silakan tandai ulang area.", 3f);
     }
-
     public void ClearAllPlacedObjects()
     {
         if (previewObject != null)
@@ -160,9 +196,6 @@ public class ARPlacementManager : MonoBehaviour
         placedObjects.Clear();
         ShowNotification("Semua furnitur telah dibersihkan.", 2.5f);
     }
-
-    // --- FUNGSI-FUNGSI LAIN (TETAP SAMA) ---
-    #region Unchanged_Helper_Functions
     public void StartPreview(GameObject prefabToPreview)
     {
         if (previewObject != null) { Destroy(previewObject); }
@@ -175,7 +208,6 @@ public class ARPlacementManager : MonoBehaviour
         
         ResetAndShowSliders();
     }
-    
     public void LockPlacement()
     {
         if (previewObject == null) return;
@@ -193,14 +225,11 @@ public class ARPlacementManager : MonoBehaviour
             ShowNotification("Tidak bisa dikunci, area sudah terisi!", 2.5f);
         }
     }
-
     public void OnRotationSliderChanged(float value) { currentYRotation = value; }
-
     public void OnScaleSliderChanged(float value)
     {
         if(previewObject != null) { previewObject.transform.localScale = Vector3.one * initialScale * value; }
     }
-    
     private void ResetAndShowSliders()
     {
         rotationSlider.value = 0;
@@ -208,13 +237,11 @@ public class ARPlacementManager : MonoBehaviour
         currentYRotation = 0;
         SetSlidersActive(true);
     }
-
     private void SetSlidersActive(bool isActive)
     {
         if(rotationSlider != null) rotationSlider.gameObject.SetActive(isActive);
         if(scaleSlider != null) scaleSlider.gameObject.SetActive(isActive);
     }
-
     private void CheckPlacementValidity()
     {
         BoxCollider previewCollider = previewObject.GetComponent<BoxCollider>();
@@ -230,21 +257,18 @@ public class ARPlacementManager : MonoBehaviour
         Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
         foreach (Renderer renderer in renderers) { renderer.material = materialToApply; }
     }
-    
     private void ShowNotification(string message, float duration)
     {
         if(notificationText == null) return;
         StopAllCoroutines();
         StartCoroutine(NotificationCoroutine(message, duration));
     }
-
     private IEnumerator NotificationCoroutine(string message, float duration)
     {
         notificationText.text = message;
         yield return new WaitForSeconds(duration);
         notificationText.text = "";
     }
-    
     private void UpdateAreaVisuals()
     {
         if (areaOutline == null || cornerMarkers.Count < 2) return;
@@ -256,7 +280,6 @@ public class ARPlacementManager : MonoBehaviour
         }
         areaOutline.SetPosition(cornerMarkers.Count, cornerMarkers[0].transform.position);
     }
-    
     private void UpdateMappingStatusText()
     {
         if (mappingStatusText == null) return;

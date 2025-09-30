@@ -589,6 +589,7 @@ MonoBehaviour:
   scaleSlider: {fileID: 1186117342}
   markerPrefab: {fileID: 2843252503841122474, guid: 50128de2158ed73419c85473b97130bd, type: 3}
   areaOutline: {fileID: 7224486305576959941, guid: 856831ae304301a499788d0b11f450a3, type: 3}
+  liveTrackerPrefab: {fileID: 6010232305123637098, guid: 51244666e17bc3c4fbec2f9ff7c4bcc2, type: 3}
   previewValidMaterial: {fileID: 2100000, guid: c15bc6673d58a624e876b42f0b67704a, type: 2}
   previewInvalidMaterial: {fileID: 2100000, guid: 790a04537f8b05e45b04f95525166f43, type: 2}
   notificationText: {fileID: 1555421362}
