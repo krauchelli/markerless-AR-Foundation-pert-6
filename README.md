@@ -23,7 +23,7 @@ The app is built with a modern "Select-Preview-Position-Lock" workflow, giving u
 
 ## 🛠️ Technology & Assets
 
--   **Engine:** Unity 2022.3.x LTS (or newer)
+-   **Engine:** Unity 6000.2.1f1 (or newer)
 -   **Platform:** Android (with ARCore)
 -   **Main Packages:**
     -   AR Foundation (v6.0+)
