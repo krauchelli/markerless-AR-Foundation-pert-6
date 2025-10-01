@@ -585,8 +585,8 @@ MonoBehaviour:
   previewInvalidMaterial: {fileID: 2100000, guid: 790a04537f8b05e45b04f95525166f43, type: 2}
   notificationText: {fileID: 1555421362}
   debugPositionText: {fileID: 1968947915}
-  rotationSlider: {fileID: 0}
-  scaleSlider: {fileID: 0}
+  rotationSlider: {fileID: 1941017894}
+  scaleSlider: {fileID: 1186117342}
 --- !u!1 &240111929
 GameObject:
   m_ObjectHideFlags: 0
