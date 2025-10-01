@@ -581,12 +581,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb87061d96b58874bad920a68ec03a7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ARPlacementManager
+  rotationSlider: {fileID: 1941017894}
+  scaleSlider: {fileID: 1186117342}
+  liveTrackerPrefab: {fileID: 7986953324756098334, guid: 23f31c7c8de79d44db1bc4357e0f7f2a, type: 3}
   previewValidMaterial: {fileID: 2100000, guid: c15bc6673d58a624e876b42f0b67704a, type: 2}
   previewInvalidMaterial: {fileID: 2100000, guid: 790a04537f8b05e45b04f95525166f43, type: 2}
   notificationText: {fileID: 1555421362}
   debugPositionText: {fileID: 1968947915}
-  rotationSlider: {fileID: 1941017894}
-  scaleSlider: {fileID: 1186117342}
 --- !u!1 &240111929
 GameObject:
   m_ObjectHideFlags: 0
